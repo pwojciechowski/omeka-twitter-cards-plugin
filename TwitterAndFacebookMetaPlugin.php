@@ -3,7 +3,7 @@
 define('TWITTER_CARDS_PLUGIN_DIR', dirname(__FILE__));
 define('TWITTER_CARDS_SITE_HANDLE_OPTION', 'twittercards_site_handle');
 
-class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
+class TwitterAndFacebookMetaPlugin extends Omeka_Plugin_AbstractPlugin
 {
   protected $_hooks =array(
     'uninstall',
@@ -19,7 +19,7 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
 
   public function hookPublicHead($args)
   {
-   
+
     $title = '';
     $description = '';
     $image_url = '';
@@ -32,7 +32,7 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
 
       $file = $exhibit->getFile();
       if($file){
-        $image_url = file_display_url($file, 'thumbnail');
+        $image_url = file_display_url($file, 'fullsize');
       }
     }
     catch (Omeka_View_Exception $ove){
@@ -47,7 +47,7 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
       if (strlen($title) > 0 && strlen($description) > 0){
         foreach (loop('files', $item->Files) as $file){
           if($file->hasThumbnail()){
-            $image_url = file_display_url($file, 'thumbnail');
+            $image_url = file_display_url($file, 'fullsize');
             break;
           }
         }
@@ -65,7 +65,7 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
 
       $file = $collection->getFile();
       if($file){
-        $image_url = file_display_url($file, 'thumbnail');
+        $image_url = file_display_url($file, 'fullsize');
       }
     }
     catch (Omeka_View_Exception $ove){
@@ -80,10 +80,10 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
       if (isset($items[0])){
         foreach (loop('files', $items[0]->Files) as $file){
           if($file->hasThumbnail()){
-            $image_url = file_display_url($file, 'thumbnail');
+            $image_url = file_display_url($file, 'fullsize');
             break;
           }
-        }      
+        }
       }
     }
 
@@ -92,9 +92,13 @@ class TwitterCardsPlugin extends Omeka_Plugin_AbstractPlugin
       echo '<meta property="twitter:site" content="'.get_option(TWITTER_CARDS_SITE_HANDLE_OPTION).'" />';
       echo '<meta property="twitter:title" content="'.strip_tags(html_entity_decode($title)).'" />';
       echo '<meta property="twitter:description" content="'.strip_tags(html_entity_decode($description)).'" />';
+      echo '<meta property="og:title" content="'.strip_tags(html_entity_decode($title)).'" />';
+      echo '<meta property="og:description" content="'.strip_tags(html_entity_decode($description)).'" />';
 
       if (strlen($image_url) > 0){
         echo '<meta property="twitter:image:src" content="'.$image_url.'" />';
+        echo '<meta property="og:image" content="'.$image_url.'" />';
+        echo '<link rel="image_src" type="image/jpeg" href="'.$image_url.'" />';
       }
     }
 
